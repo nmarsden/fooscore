@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>Singles</title>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+    <link rel="stylesheet" href="fooscore.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+</head>
+
+<body>
+<div data-role="page">
+	<div data-role="header">
+        <div data-role="navbar">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+	    </div>
+    </div>
+	<div data-role="content">
+        <h1>Singles Game</h1>
+        <div data-role="fieldcontain" class="redplayer">
+                <label for="playerName1" class="playerlabel">Red Player Name:</label>
+                <input type="text" name="playerName1" id="playerName1" value=""  />
+        </div>
+        <div style="text-align: center">VS</div>
+        <div data-role="fieldcontain" class="blueplayer">
+            <label for="playerName2" class="playerlabel">Blue Player Name:</label>
+            <input type="text" name="playerName2" id="playerName2" value=""  />
+        </div>
+        <a href="#" data-role="button">Start</a>
+	</div>
+</div>
+</body>
+</html>

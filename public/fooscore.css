@@ -1,0 +1,28 @@
+.logo {
+    background-image: url("logo.jpg");
+    width: 200px;
+    height: 183px;
+    margin: 70px auto;
+}
+
+.logotext {
+    text-align: center;
+    position: relative;
+    top: 9px;
+    font-size: 42px;
+    color: green;
+}
+
+.redplayer {
+    background-color: red;
+    padding: 10px;
+}
+
+.blueplayer {
+    background-color: blue;
+    padding: 10px;
+}
+
+.playerlabel {
+    color: white;
+}
