@@ -13,16 +13,37 @@
     color: green;
 }
 
-.redplayer {
+.playerName1 {
     background-color: red;
     padding: 10px;
 }
 
-.blueplayer {
+.playerName2 {
     background-color: blue;
     padding: 10px;
 }
 
 .playerlabel {
     color: white;
+}
+
+.scoreName1,
+.scoreName2,
+.scoreNumber,
+.versus {
+    text-align: center;
+}
+
+.scoreName1 {
+    background-color: red;
+    color: white;
+}
+
+.scoreName2 {
+    background-color: blue;
+    color: white;
+}
+
+.center-button {
+    margin: 0 auto;
 }

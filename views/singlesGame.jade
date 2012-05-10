@@ -1,0 +1,26 @@
+!!! 5
+html
+  head
+  body
+    div(data-role='page')
+      div(data-role='header')
+        div(data-role='navbar')
+          ul
+            li
+              a(href='/') Home
+      div(data-role='content')
+        form(action='/singles/new', method='post')
+          div(class='ui-grid-a')
+            div(class='ui-block-a')
+              h1.scoreName1 #{playerName1}
+              h1.scoreNumber #{playerScore1}
+              input(type='hidden', name='playerName1', value='#{playerName1}')
+              input(type='hidden', id='playerScore1', name='playerScore1', value='#{playerScore1}')
+              input(type='submit', id='playerGoal1Btn', value='Goal!')
+            div(class='ui-block-b')
+              h1.scoreName2 #{playerName2}
+              h1.scoreNumber #{playerScore2}
+              input(type='hidden', name='playerName2', value='#{playerName2}')
+              input(type='hidden', id='playerScore2', name='playerScore2', value='#{playerScore2}')
+              input(type='submit', id='playerGoal2Btn', value='Goal!')
+      script(src='/javascripts/singlesGame.js')

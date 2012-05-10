@@ -10,11 +10,14 @@ html
               a(href='/') Home
       div(data-role='content')
         h1 Singles Game
-        .redplayer(data-role='fieldcontain')
-          label.playerlabel(for='playerName1') Red Player Name:
-          input#playerName1(type='text', name='playerName1', value='')
-        div(style='text-align: center;') VS
-        .blueplayer(data-role='fieldcontain')
-          label.playerlabel(for='playerName2') Blue Player Name:
-          input#playerName2(type='text', name='playerName2', value='')
-        a(href='#', data-role='button') Start
+        form(action='/singles/new', method='post')
+          .playerName1(data-role='fieldcontain')
+            label.playerlabel(for='playerName1') Red Player Name:
+            input(type='text', id='playerName1', name='playerName1')
+            input(type='hidden', name='playerScore1', value='0')
+          div(style='text-align: center;') VS
+          .playerName2(data-role='fieldcontain')
+            label.playerlabel(for='playerName2') Blue Player Name:
+            input(type='text', id='playerName2', name='playerName2')
+            input(type='hidden', name='playerScore2', value='0')
+          input(type='submit', value='Start')

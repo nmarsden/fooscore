@@ -1,9 +1,6 @@
 var express = require('express');
 var app = module.exports = express.createServer();
 
-// Routes
-require('./routes')(app);
-
 // Configuration
 app.configure(function(){
   app.set('views', __dirname + '/views');
@@ -13,6 +10,9 @@ app.configure(function(){
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
 });
+
+// Routes
+require('./routes')(app);
 
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
