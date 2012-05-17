@@ -9,15 +9,18 @@ html
             li
               a(href='/') Home
       div(data-role='content')
-        h1 Singles Game
-        form(action='/singles/new', method='post')
+        h1 #{gameTitle}
+        form(action='/games/new', method='post')
+          input(type='hidden', name='gameType', value='#{gameType}')
           .playerName1(data-role='fieldcontain')
-            label.playerlabel(for='playerName1') Red Player Name:
-            input(type='text', id='playerName1', name='playerName1')
+            label.playerlabel(for='playerId1') Red Player Name:
+            select(id='playerId1', name='playerId1')
+               option(value="4fb392dd5ed45854e7c3a88e") Andrew
             input(type='hidden', name='playerScore1', value='0')
           div(style='text-align: center;') VS
           .playerName2(data-role='fieldcontain')
-            label.playerlabel(for='playerName2') Blue Player Name:
-            input(type='text', id='playerName2', name='playerName2')
+            label.playerlabel(for='playerId2') Blue Player Name:
+            select(id='playerId2', name='playerId2')
+               option(value="4fb393b95ed45854e7c3a890") Bruce
             input(type='hidden', name='playerScore2', value='0')
           input(type='submit', value='Start')

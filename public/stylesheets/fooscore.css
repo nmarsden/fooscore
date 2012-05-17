@@ -1,3 +1,11 @@
+.ui-content {
+    padding: 5px;
+}
+
+h1 {
+    text-align: center;
+}
+
 .logo {
     background-image: url("../images/logo.jpg");
     width: 200px;
@@ -16,11 +24,13 @@
 .playerName1 {
     background-color: red;
     padding: 10px;
+    margin: 5px;
 }
 
 .playerName2 {
     background-color: blue;
     padding: 10px;
+    margin: 5px;
 }
 
 .playerlabel {
@@ -29,9 +39,10 @@
 
 .scoreName1,
 .scoreName2,
-.scoreNumber,
-.versus {
+.scoreNumber {
     text-align: center;
+    padding: 10px;
+    margin: 5px;
 }
 
 .scoreName1 {

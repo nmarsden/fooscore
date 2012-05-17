@@ -1,4 +1,8 @@
 var express = require('express');
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/fooscore');
+
 var app = module.exports = express.createServer();
 
 // Configuration
@@ -14,6 +18,7 @@ app.configure(function(){
 // Routes
 require('./routes')(app);
 
+// Configure
 app.configure('development', function(){
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
