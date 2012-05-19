@@ -1,0 +1,1 @@
+c:\mongodb\bin\mongo.exe localhost/fooscore restore_db.js

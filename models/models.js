@@ -19,12 +19,12 @@ var GoalSchema = new Schema ({
 var GameSchema = new Schema({
     gameType: { type: String, enum: ["singles", "doubles"] },
     players: [{ type: ObjectId, ref: 'User' }],
-    goals: [GoalSchema],
+    goals: [{ type: ObjectId, ref: 'Goal' }],
     state: { type: String, enum: ["in-progress", "complete"] },
     startDate: { type: Date, default: Date.now },
-    endDate: { type: Date },
-    winner: [{ type: ObjectId, ref: 'User' }],
-    loser: [{ type: ObjectId, ref: 'User' }]
+    completeDate: { type: Date },
+    winner: { type: ObjectId, ref: 'User' },
+    loser: { type: ObjectId, ref: 'User' }
 });
 
 GameSchema.methods.playerScore = function (playerId) {
@@ -33,12 +33,15 @@ GameSchema.methods.playerScore = function (playerId) {
     }).length;
 };
 
-GameSchema.methods.populateForWinner = function (playerId) {
+GameSchema.methods.opponentPlayerId = function (playerId) {
+    return _.find(this.players, function(player){ return player._id != playerId; })._id;
+}
+
+GameSchema.methods.completeGame = function (winnerPlayerId) {
     this.state = "complete";
-    // TODO set endDate
-//game.endDate = Date.now;
-    this.winner = playerId;
-    this.loser = _.find(this.players, function(player){ return player._id != playerId; })._id;
+    this.completeDate = new Date();
+    this.winner = winnerPlayerId;
+    this.loser = this.opponentPlayerId(winnerPlayerId);
 }
 
 // Models
