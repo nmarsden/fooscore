@@ -10,16 +10,16 @@ html
               a(href='/') Home
       div(data-role='content')
         div(class='ui-grid-a')
+          input(type='hidden', id='gameId', value='#{gameId}')
+          input(type='hidden', id='gameState', value='#{gameState}')
+          input(type='hidden', id='playerId1', value='#{playerId1}')
+          input(type='hidden', id='playerId2', value='#{playerId2}')
           div(class='ui-block-a')
-            form(action='/games/#{gameId}/goal/new', method='post')
-              h1.scoreName1 #{playerName1}
-              h1.scoreNumber #{playerScore1}
-              input(type='hidden', name='playerId', value='#{playerId1}')
-              input(type='submit', id='playerGoal1Btn', value='Goal!')
+            h1.scoreName1 #{playerName1}
+            h1.scoreNumber(id='playerScore1') #{playerScore1}
+            input(type='submit', id='playerGoal1Btn', value='Goal!')
           div(class='ui-block-b')
-            form(action='/games/#{gameId}/goal/new', method='post')
-              h1.scoreName2 #{playerName2}
-              h1.scoreNumber #{playerScore2}
-              input(type='hidden', name='playerId', value='#{playerId2}')
-              input(type='submit', id='playerGoal2Btn', value='Goal!')
+            h1.scoreName2 #{playerName2}
+            h1.scoreNumber(id='playerScore2') #{playerScore2}
+            input(type='submit', id='playerGoal2Btn', value='Goal!')
       script(src='/javascripts/singlesGame.js')

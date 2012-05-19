@@ -19,6 +19,7 @@ module.exports = function(app){
                 var playerScore2 = game.playerScore(playerId2);
                 res.render('gameView', {
                     gameId: game._id,
+                    gameState: game.state,
                     playerName1: playerName1,
                     playerName2: playerName2,
                     playerId1: playerId1,
@@ -100,7 +101,8 @@ module.exports = function(app){
                         if (err) {
                             return console.log("ERROR SAVING GAME", err);
                         }
-                        viewGame(res, game._id);
+                        res.send("OK! Goal saved", 200);
+                        return true;
                     });
                 }.bind(null, game));
             }.bind(null, playerId));
