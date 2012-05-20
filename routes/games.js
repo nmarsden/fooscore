@@ -5,28 +5,37 @@ module.exports = function(app){
 
     function viewGame(res, gameId) {
         models.Game.findById(gameId)
-            .populate('players', ['name'])
-            .populate('goals', ['user'])
+            .populate('teams')
+            .populate('goals', ['team'])
             .run(function (err, game) {
                 if (err) {
                     return console.log("ERROR RETRIEVING GAME", err);
                 }
-                var playerName1 = game.players[0].name;
-                var playerName2 = game.players[1].name;
-                var playerId1 = game.players[0]._id;
-                var playerId2 = game.players[1]._id;
-                var playerScore1 = game.playerScore(playerId1);
-                var playerScore2 = game.playerScore(playerId2);
-                res.render('gameView', {
-                    gameId: game._id,
-                    gameState: game.state,
-                    playerName1: playerName1,
-                    playerName2: playerName2,
-                    playerId1: playerId1,
-                    playerId2: playerId2,
-                    playerScore1: playerScore1,
-                    playerScore2: playerScore2
-                });
+                var userId1 = game.teams[0].members[0];
+                var userId2 = game.teams[1].members[0];
+
+                models.User.where('_id').in([userId1,userId2]).run(function (game, userId1, userId2, err, users) {
+                    if (err) {
+                        return console.log("ERROR RETRIEVING USERS", err);
+                    }
+
+                    var teamName1 = _.find(users, function(user) { return user._id.equals(userId1) }).name;
+                    var teamName2 = _.find(users, function(user) { return user._id.equals(userId2) }).name;
+                    var teamId1 = game.teams[0]._id;
+                    var teamId2 = game.teams[1]._id;
+                    var teamScore1 = game.teamScore(teamId1);
+                    var teamScore2 = game.teamScore(teamId2);
+                    res.render('gameView', {
+                        gameId: game._id,
+                        gameState: game.state,
+                        teamName1: teamName1,
+                        teamName2: teamName2,
+                        teamId1: teamId1,
+                        teamId2: teamId2,
+                        teamScore1: teamScore1,
+                        teamScore2: teamScore2
+                    });
+                }.bind(null, game, userId1, userId2));
             });
     }
 
@@ -44,30 +53,64 @@ module.exports = function(app){
     });
 
     app.post('/games/new', function(req, res){
-        // TODO verify that playerId1 and playerId2 are different
-        var game = new models.Game({
-            gameType: req.param('gameType'),
-            players: [req.param('playerId1'), req.param('playerId2')],
-            goals: [],
-            state: "in-progress"
-        });
-        game.save(function (err) {
+        var userId1 = req.param('userId1');
+        var userId2 = req.param('userId2');
+        // TODO verify that userId1 and userId2 are different
+
+        models.Team.where('members').in([userId1,userId2]).run(function (userId1, userId2, err, teams) {
             if (err) {
-                return console.log("ERROR SAVING GAME", err);
+                return console.log("ERROR RETRIEVING TEAMS", err);
             }
-            console.log("game created");
-            viewGame(res, game._id);
-        });
+            var team1 = _.find(teams, function(team){ return team.members[0] == userId1; });
+            var team2 = _.find(teams, function(team){ return team.members[0] == userId2; });
+
+            if (!team1) {
+                team1 = new models.Team({
+                    teamType: "singles",
+                    members: [userId1]
+                });
+                team1.save(function(err) {
+                    if (err) {
+                        return console.log("ERROR SAVING TEAM", err);
+                    }
+                });
+            }
+            if (!team2) {
+                team2 = new models.Team({
+                    teamType: "singles",
+                    members: [userId2]
+                });
+                team2.save(function(err) {
+                    if (err) {
+                        return console.log("ERROR SAVING TEAM", err);
+                    }
+                });
+            }
+
+            var game = new models.Game({
+                gameType: req.param('gameType'),
+                teams: [team1._id, team2._id],
+                goals: [],
+                state: "in-progress"
+            });
+            game.save(function (err) {
+                if (err) {
+                    return console.log("ERROR SAVING GAME", err);
+                }
+                console.log("game created");
+                viewGame(res, game._id);
+            });
+        }.bind(null, userId1, userId2));
     });
 
     app.post('/games/:id/goal/new', function(req, res){
         // 1. find game
         var gameId = req.params.id;
-        var playerId = req.param('playerId');
+        var teamId = req.param('teamId');
         models.Game.findById(gameId)
-            .populate('players', ['name'])
-            .populate('goals', ['user'])
-            .run(function (playerId, err, game) {
+            .populate('teams', ['members'])
+            .populate('goals', ['team'])
+            .run(function (teamId, err, game) {
                 if (err) {
                     return console.log("ERROR RETRIEVING GAME", err);
                 }
@@ -76,16 +119,16 @@ module.exports = function(app){
                     res.send("CANNOT ADD GOAL! GAME ALREADY COMPLETE", 400);
                     return true;
                 }
-                // 2. Determine if the player has just scored the winning goal
-                var playerGoals = game.playerScore(playerId) + 1;
-                if (playerGoals === 10) {
+                // 2. Determine if the team has just scored the winning goal
+                var teamGoals = game.teamScore(teamId) + 1;
+                if (teamGoals === 10) {
                     console.log("game completed!");
-                    game.completeGame(playerId);
+                    game.completeGame(teamId);
                 }
 
                 // 3. create goal
                 var goal = new models.Goal({
-                    user: playerId
+                    team: teamId
                 });
 
                 // 4. save goal
@@ -105,7 +148,7 @@ module.exports = function(app){
                         return true;
                     });
                 }.bind(null, game));
-            }.bind(null, playerId));
+            }.bind(null, teamId));
     });
 
 

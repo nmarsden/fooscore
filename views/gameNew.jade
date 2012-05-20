@@ -14,15 +14,13 @@ html
           input(type='hidden', name='gameType', value='#{gameType}')
           .playerName1(data-role='fieldcontain')
             label.playerlabel(for='playerId1') Red Player Name:
-            select(id='playerId1', name='playerId1')
+            select(id='playerId1', name='userId1')
               for user in users
                 option(value='#{user._id}') #{user.name}
-            input(type='hidden', name='playerScore1', value='0')
           div(style='text-align: center;') VS
           .playerName2(data-role='fieldcontain')
             label.playerlabel(for='playerId2') Blue Player Name:
-            select(id='playerId2', name='playerId2')
+            select(id='playerId2', name='userId2')
               for user in users
                 option(value='#{user._id}') #{user.name}
-            input(type='hidden', name='playerScore2', value='0')
           input(type='submit', value='Start')

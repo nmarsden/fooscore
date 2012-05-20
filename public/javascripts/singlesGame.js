@@ -1,17 +1,17 @@
 pageScript(function($context){
     $context.live("pageinit", function(event, ui) {
 
-        var increasePlayerScore = function(playerScoreId) {
-            var $playerScore = $context.find('#' + playerScoreId);
-            var newScore = parseInt($playerScore.text(),10) + 1;
-            $playerScore.text(newScore);
+        var increaseTeamScore = function(teamScoreId) {
+            var $teamScore = $context.find('#' + teamScoreId);
+            var newScore = parseInt($teamScore.text(),10) + 1;
+            $teamScore.text(newScore);
             return newScore;
         };
-        var postNewGoal = function(playerId) {
+        var postNewGoal = function(teamId) {
             var gameId = $context.find('#gameId').val();
-            var playerId = $context.find('#' + playerId).val();
+            var teamId = $context.find('#' + teamId).val();
             $.post("/games/" + gameId + "/goal/new", {
-                "playerId": playerId
+                "teamId": teamId
             }, function (data, textStatus, jqXHR) {
                 //console.log("Post response:");
                 console.dir(data);
@@ -21,15 +21,15 @@ pageScript(function($context){
         };
         var showGameAsComplete = function() {
             console.log("showGameAsComplete called");
-            $('#playerGoal1Btn').closest('.ui-btn').hide();
-            $('#playerGoal2Btn').closest('.ui-btn').hide();
+            $('#teamGoal1Btn').closest('.ui-btn').hide();
+            $('#teamGoal2Btn').closest('.ui-btn').hide();
             // TODO indicate winner
         };
-        var goalBtnEventHandler = function(playerNumber) {
+        var goalBtnEventHandler = function(teamNumber) {
             return function() {
                 // TODO ignore subsequent button clicks while processing this event
-                var newScore = increasePlayerScore('playerScore' + playerNumber);
-                postNewGoal('playerId' + playerNumber);
+                var newScore = increaseTeamScore('teamScore' + teamNumber);
+                postNewGoal('teamId' + teamNumber);
                 if (newScore === 10) {
                     showGameAsComplete()
                 }
@@ -37,10 +37,10 @@ pageScript(function($context){
         };
         var showGameAsInProgress = function() {
             console.log("showGameAsInProgress called");
-            $('#playerGoal1Btn').closest('.ui-btn').show();
-            $('#playerGoal2Btn').closest('.ui-btn').show();
-            $context.find('#playerGoal1Btn').bind('click', goalBtnEventHandler(1));
-            $context.find('#playerGoal2Btn').bind('click', goalBtnEventHandler(2));
+            $('#teamGoal1Btn').closest('.ui-btn').show();
+            $('#teamGoal2Btn').closest('.ui-btn').show();
+            $context.find('#teamGoal1Btn').bind('click', goalBtnEventHandler(1));
+            $context.find('#teamGoal2Btn').bind('click', goalBtnEventHandler(2));
         };
 
         var gameState = $context.find('#gameState').val();

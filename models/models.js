@@ -11,41 +11,47 @@ var UserSchema = new Schema({
     password: { type: String }
 });
 
+var TeamSchema = new Schema({
+    teamType: { type: String, enum: ["singles", "doubles"] },
+    members: [{ type: ObjectId, ref: 'User' }]
+});
+
 var GoalSchema = new Schema ({
-    user: { type: ObjectId, ref: 'User' },
+    team: { type: ObjectId, ref: 'Team' },
     date: { type: Date, default: Date.now }
 });
 
 var GameSchema = new Schema({
     gameType: { type: String, enum: ["singles", "doubles"] },
-    players: [{ type: ObjectId, ref: 'User' }],
+    teams: [{ type: ObjectId, ref: 'Team' }],
     goals: [{ type: ObjectId, ref: 'Goal' }],
     state: { type: String, enum: ["in-progress", "complete"] },
     startDate: { type: Date, default: Date.now },
     completeDate: { type: Date },
-    winner: { type: ObjectId, ref: 'User' },
-    loser: { type: ObjectId, ref: 'User' }
+    winner: { type: ObjectId, ref: 'Team' },
+    loser: { type: ObjectId, ref: 'Team' }
 });
 
-GameSchema.methods.playerScore = function (playerId) {
+GameSchema.methods.teamScore = function (teamId) {
     return _.filter(this.goals, function(goal){
-        return goal.user.equals(playerId);
+        return goal.team.equals(teamId);
     }).length;
 };
 
-GameSchema.methods.opponentPlayerId = function (playerId) {
-    return _.find(this.players, function(player){ return player._id != playerId; })._id;
+GameSchema.methods.opponentTeamId = function (teamId) {
+    return _.find(this.teams, function(team){ return team._id != teamId; })._id;
 }
 
-GameSchema.methods.completeGame = function (winnerPlayerId) {
+GameSchema.methods.completeGame = function (winnerTeamId) {
     this.state = "complete";
     this.completeDate = new Date();
-    this.winner = winnerPlayerId;
-    this.loser = this.opponentPlayerId(winnerPlayerId);
+    this.winner = winnerTeamId;
+    this.loser = this.opponentTeamId(winnerTeamId);
 }
 
 // Models
 exports.User = mongoose.model('User', UserSchema);
+exports.Team = mongoose.model('Team', TeamSchema);
 exports.Game = mongoose.model('Game', GameSchema);
 exports.Goal = mongoose.model('Goal', GoalSchema);
 

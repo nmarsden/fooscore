@@ -1,7 +1,8 @@
 var userData = ["Mike", "Prashant", "Gokul", "Nate", "Felix", "Neil", "Tim", "Mark", "Ben", "Justin"];
 var gameData = [
     { winner: 0, loser: 1, losingGoals: 7, goalIds: [] },
-    { winner: 2, loser: 3, losingGoals: 8, goalIds: [] }
+    { winner: 2, loser: 3, losingGoals: 8, goalIds: [] },
+    { winner: 3, loser: 1, losingGoals: 3, goalIds: [] }
 ]
 
 print("*** Restoring Users ***")
@@ -15,6 +16,35 @@ userData.forEach(function(userName) {
 var users = db.users.find().toArray();
 printjson(users);
 
+print("*** Restoring Teams ***")
+var teamCount = db.teams.count();
+print(" - removing " + teamCount + " teams");
+db.teams.remove();
+var uniqueUserIndexes = [];
+gameData.forEach(function(game) {
+    if (uniqueUserIndexes.indexOf(game.winner) === -1) {
+        uniqueUserIndexes.push(game.winner);
+    }
+    if (uniqueUserIndexes.indexOf(game.loser) === -1) {
+        uniqueUserIndexes.push(game.loser);
+    }
+});
+var numberOfTeams = uniqueUserIndexes.length;
+print(" - adding " + numberOfTeams + " teams");
+uniqueUserIndexes.forEach(function(userIndex) {
+    db.teams.insert({
+        type:"singles",
+        members:[users[userIndex]._id]
+    });
+});
+var teams = db.teams.find().toArray();
+printjson(teams);
+
+var teamForUserIndex = {};
+for (var i=0; i<numberOfTeams; i++) {
+    teamForUserIndex[uniqueUserIndexes[i]] = teams[i];
+}
+
 print("*** Restoring Goals ***")
 var goalCount = db.goals.count();
 print(" - removing " + goalCount + " goals");
@@ -27,20 +57,20 @@ print(" - adding " + numberOfGoals + " goals");
 for (var i=0; i<numberOfGames; i++) {
     var goalId,
         goalIds = gameData[i].goalIds,
-        winningUser  = users[gameData[i].winner],
-        losingUser  = users[gameData[i].loser],
+        winningTeam  = teamForUserIndex[gameData[i].winner],
+        losingTeam  = teamForUserIndex[gameData[i].loser],
         losingGoals = gameData[i].losingGoals;
-    print("   - adding 10 goals for " + winningUser.name);
+    print("   - adding 10 goals for " + users[gameData[i].winner].name);
     for (var j=0; j<10; j++) {
         goalId = new ObjectId();
         goalIds.push(goalId);
-        db.goals.insert({ _id: goalId, user: winningUser._id });
+        db.goals.insert({ _id: goalId, team: winningTeam._id });
     }
-    print("   - adding " + losingGoals + " goals for " + losingUser.name);
+    print("   - adding " + losingGoals + " goals for " + users[gameData[i].loser].name);
     for (var j=0; j<losingGoals; j++) {
         goalId = new ObjectId();
         goalIds.push(goalId);
-        db.goals.insert({ _id: goalId, user: losingUser._id });
+        db.goals.insert({ _id: goalId, team: losingTeam._id });
     }
 }
 var goals = db.goals.find().toArray();
@@ -54,19 +84,19 @@ db.games.remove();
 print(" - adding " + numberOfGames + " game");
 for (var i=0; i<numberOfGames; i++) {
     var goalIds = gameData[i].goalIds,
-        winningUser  = users[gameData[i].winner],
-        losingUser  = users[gameData[i].loser],
+        winningTeam  = teamForUserIndex[gameData[i].winner],
+        losingTeam  = teamForUserIndex[gameData[i].loser],
         losingGoals = gameData[i].losingGoals;
-    print("   - adding " + winningUser.name + " (10) vs " + losingUser.name + " (" + losingGoals + ")");
+    print("   - adding " + users[gameData[i].winner].name + " (10) vs " + users[gameData[i].loser].name + " (" + losingGoals + ")");
     db.games.insert({
         gameType: "singles",
-        players: [ winningUser._id, losingUser._id ],
-            goals: goalIds,
-            state: "complete",
+        teams: [ winningTeam._id, losingTeam._id ],
+        goals: goalIds,
+        state: "complete",
         startDate: new Date("May 18, 2012 12:05:00"),
         completeDate: new Date("May 18, 2012 12:20:00"),
-        winner: winningUser._id,
-        loser: losingUser._id
+        winner: winningTeam._id,
+        loser: losingTeam._id
     });
 }
 printjson(db.games.find().toArray());
