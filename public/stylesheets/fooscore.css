@@ -6,6 +6,94 @@ h1 {
     text-align: center;
 }
 
+.ui-body-c, .ui-overlay-c {
+    background-color: #fff;
+    background-image: none;
+}
+
+.background-logo {
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: 0 -44px;
+    margin: 0px auto;
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
+    .background-logo {
+        background-image: url("../images/apple-touch-startup-image-320x460.png");
+        width: 320px;
+        height: 406px;
+    }
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen
+and (min-width : 321px) {
+    .background-logo {
+        background-image: url("../images/background-logo-460x320.png");
+        width: 460px;
+        height: 246px;
+    }
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width : 320px) {
+    .background-logo {
+        background-image: url("../images/apple-touch-startup-image-320x460.png");
+        width: 320px;
+        height: 406px;
+    }
+}
+
+/* iPads (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px) {
+    .background-logo {
+        background-image: url("../images/apple-touch-startup-image-768x1004.png");
+        width: 768px;
+        height: 950px;
+    }
+}
+
+/* iPads (landscape) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : landscape) {
+    .background-logo {
+        background-image: url("../images/background-logo-1024x748.png");
+        width: 1024px;
+        height: 694px;
+    }
+}
+
+/* iPads (portrait) ----------- */
+@media only screen
+and (min-device-width : 768px)
+and (max-device-width : 1024px)
+and (orientation : portrait) {
+    .background-logo {
+        background-image: url("../images/apple-touch-startup-image-768x1004.png");
+        width: 768px;
+        height: 950px;
+    }
+}
+
+/* Desktops and laptops ----------- */
+@media only screen
+and (min-width : 1224px) {
+    .background-logo {
+        background-image: url("../images/apple-touch-startup-image-768x1004.png");
+        width: 768px;
+        height: 1004px;
+    }
+}
+
 .logo {
     background-image: url("../images/logo.jpg");
     width: 200px;
