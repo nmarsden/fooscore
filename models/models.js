@@ -32,6 +32,10 @@ var GameSchema = new Schema({
     loser: { type: ObjectId, ref: 'Team' }
 });
 
+GameSchema.methods.isDoubles = function() {
+    return this.gameType === 'doubles';
+}
+
 GameSchema.methods.teamScore = function (teamId) {
     return _.filter(this.goals, function(goal){
         return goal.team.equals(teamId);

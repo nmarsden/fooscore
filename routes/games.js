@@ -3,6 +3,14 @@ var models = require('../models/models'),
 
 module.exports = function(app){
 
+    function teamNameFor(userId1, userId2, users) {
+        return userNameFor(userId1, users) + (userId2 ? (" & " + userNameFor(userId2, users)) : "");
+    }
+
+    function userNameFor(userId, users) {
+        return _.find(users, function(user) { return user._id.equals(userId) }).name;
+    }
+
     function viewGame(res, gameId) {
         models.Game.findById(gameId)
             .populate('teams')
@@ -11,16 +19,18 @@ module.exports = function(app){
                 if (err) {
                     return console.log("ERROR RETRIEVING GAME", err);
                 }
-                var userId1 = game.teams[0].members[0];
-                var userId2 = game.teams[1].members[0];
+                var team1UserId1 = game.teams[0].members[0];
+                var team1UserId2 = game.isDoubles() ? game.teams[0].members[1] : null;
+                var team2UserId1 = game.teams[1].members[0];
+                var team2UserId2 = game.isDoubles() ? game.teams[1].members[1] : null;
 
-                models.User.where('_id').in([userId1,userId2]).run(function (game, userId1, userId2, err, users) {
+                models.User.where('_id').in([team1UserId1, team1UserId2, team2UserId1, team2UserId2]).run(function (game, team1UserId1, team1UserId2, team2UserId1, team2UserId2, err, users) {
                     if (err) {
                         return console.log("ERROR RETRIEVING USERS", err);
                     }
 
-                    var teamName1 = _.find(users, function(user) { return user._id.equals(userId1) }).name;
-                    var teamName2 = _.find(users, function(user) { return user._id.equals(userId2) }).name;
+                    var teamName1 = teamNameFor(team1UserId1, team1UserId2, users);
+                    var teamName2 = teamNameFor(team2UserId1, team2UserId2, users);
                     var teamId1 = game.teams[0]._id;
                     var teamId2 = game.teams[1]._id;
                     var teamScore1 = game.teamScore(teamId1);
@@ -35,12 +45,62 @@ module.exports = function(app){
                         teamScore1: teamScore1,
                         teamScore2: teamScore2
                     });
-                }.bind(null, game, userId1, userId2));
+                }.bind(null, game, team1UserId1, team1UserId2, team2UserId1, team2UserId2));
             });
     }
 
+    function retrieveOrCreateTeamFor(userId1, userId2, existingTeams) {
+        if (!userId2) {
+            return retrieveOrCreateSinglesTeamFor(userId1, existingTeams);
+        } else {
+            return retrieveOrCreateDoublesTeamFor(userId1, userId2, existingTeams);
+        }
+    }
+
+    function retrieveOrCreateSinglesTeamFor(userId, existingTeams) {
+        var team = _.find(existingTeams, function(team){ return team.members[0] == userId; });
+        if (!team) {
+            team = new models.Team({
+                teamType: "singles",
+                members: [userId]
+            });
+            team.save(function(err) {
+                if (err) {
+                    return console.log("ERROR SAVING SINGLES TEAM", err);
+                }
+            });
+        }
+        return team;
+    }
+
+    function retrieveOrCreateDoublesTeamFor(userId1, userId2, existingTeams) {
+        var team = _.find(existingTeams, function(team){
+            return (team.members[0] == userId1 && team.members[1] == userId2) || (team.members[0] == userId2 && team.members[1] == userId1);
+        });
+        if (!team) {
+            team = new models.Team({
+                teamType: "doubles",
+                members: [userId1, userId2]
+            });
+            team.save(function(err) {
+                if (err) {
+                    return console.log("ERROR SAVING DOUBLES TEAM", err);
+                }
+            });
+        }
+        return team;
+    }
+
+    function createFindExistingTeamsQueryFor(gameType, team1userId1, team1userId2, team2userId1, team2userId2) {
+        if (gameType === 'singles') {
+            return models.Team.where('members').in([team1userId1,team2userId1]);
+        } else {
+            return models.Team.find({}).or([{ members: { $all: [ team1userId1, team1userId2 ] } }, { members: { $all: [ team2userId1, team2userId2 ] } }])
+        }
+    }
+
     app.get('/games/new', function(req, res){
-        var users = models.User.find(function (err, users) {
+        models.User.find(function (err, users) {
             if (err) {
                 console.log("ERROR RETRIEVING USERS", err);
             }
@@ -53,42 +113,24 @@ module.exports = function(app){
     });
 
     app.post('/games/new', function(req, res){
-        var userId1 = req.param('userId1');
-        var userId2 = req.param('userId2');
-        // TODO verify that userId1 and userId2 are different
+        var gameType = req.param('gameType');
+        var team1userId1 = req.param('team1userId1');
+        var team1userId2 = req.param('team1userId2');
+        var team2userId1 = req.param('team2userId1');
+        var team2userId2 = req.param('team2userId2');
+        // TODO verify that userIds are all different
+        // TODO verify that for gameType 'doubles' we have 4 userIds
 
-        models.Team.where('members').in([userId1,userId2]).run(function (userId1, userId2, err, teams) {
+        createFindExistingTeamsQueryFor(gameType, team1userId1, team1userId2, team2userId1, team2userId2)
+          .run(function (team1userId1, team1userId2, team2userId1, team2userId2, err, existingTeams) {
             if (err) {
                 return console.log("ERROR RETRIEVING TEAMS", err);
             }
-            var team1 = _.find(teams, function(team){ return team.members[0] == userId1; });
-            var team2 = _.find(teams, function(team){ return team.members[0] == userId2; });
-
-            if (!team1) {
-                team1 = new models.Team({
-                    teamType: "singles",
-                    members: [userId1]
-                });
-                team1.save(function(err) {
-                    if (err) {
-                        return console.log("ERROR SAVING TEAM", err);
-                    }
-                });
-            }
-            if (!team2) {
-                team2 = new models.Team({
-                    teamType: "singles",
-                    members: [userId2]
-                });
-                team2.save(function(err) {
-                    if (err) {
-                        return console.log("ERROR SAVING TEAM", err);
-                    }
-                });
-            }
+            var team1 = retrieveOrCreateTeamFor(team1userId1, team1userId2, existingTeams);
+            var team2 = retrieveOrCreateTeamFor(team2userId1, team2userId2, existingTeams);
 
             var game = new models.Game({
-                gameType: req.param('gameType'),
+                gameType: gameType,
                 teams: [team1._id, team2._id],
                 goals: [],
                 state: "in-progress"
@@ -100,7 +142,7 @@ module.exports = function(app){
                 console.log("game created");
                 viewGame(res, game._id);
             });
-        }.bind(null, userId1, userId2));
+        }.bind(null, team1userId1, team1userId2, team2userId1, team2userId2));
     });
 
     app.post('/games/:id/goal/new', function(req, res){

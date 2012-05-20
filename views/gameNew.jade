@@ -12,15 +12,28 @@ html
         h1 #{gameTitle}
         form(action='/games/new', method='post')
           input(type='hidden', name='gameType', value='#{gameType}')
-          .playerName1(data-role='fieldcontain')
-            label.playerlabel(for='playerId1') Red Player Name:
-            select(id='playerId1', name='userId1')
-              for user in users
-                option(value='#{user._id}') #{user.name}
-          div(style='text-align: center;') VS
-          .playerName2(data-role='fieldcontain')
-            label.playerlabel(for='playerId2') Blue Player Name:
-            select(id='playerId2', name='userId2')
-              for user in users
-                option(value='#{user._id}') #{user.name}
+          .teamName1(data-role='fieldcontain')
+            fieldset.teamlabel(data-role='controlgroup')
+              legend Red Team:
+              select(name='team1userId1')
+                option Choose...
+                for user in users
+                  option(value='#{user._id}') #{user.name}
+              if gameType === 'doubles'
+                select(name='team1userId2')
+                  option Choose...
+                  for user in users
+                    option(value='#{user._id}') #{user.name}
+          .teamName2(data-role='fieldcontain')
+            fieldset.teamlabel(data-role='controlgroup')
+              legend Blue Team:
+              select(name='team2userId1')
+                option Choose...
+                for user in users
+                  option(value='#{user._id}') #{user.name}
+              if gameType === 'doubles'
+                select(name='team2userId2')
+                  option Choose...
+                  for user in users
+                    option(value='#{user._id}') #{user.name}
           input(type='submit', value='Start')

@@ -94,34 +94,19 @@ and (min-width : 1224px) {
     }
 }
 
-.logo {
-    background-image: url("../images/logo.jpg");
-    width: 200px;
-    height: 183px;
-    margin: 70px auto;
-}
-
-.logotext {
-    text-align: center;
-    position: relative;
-    top: 9px;
-    font-size: 42px;
-    color: green;
-}
-
-.playerName1 {
+.teamName1 {
     background-color: red;
     padding: 10px;
     margin: 5px;
 }
 
-.playerName2 {
+.teamName2 {
     background-color: blue;
     padding: 10px;
     margin: 5px;
 }
 
-.playerlabel {
+.teamlabel {
     color: white;
 }
 
