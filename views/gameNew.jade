@@ -15,24 +15,24 @@ html
           .teamName1(data-role='fieldcontain')
             fieldset.teamlabel(data-role='controlgroup')
               legend Red Team:
-              select(name='team1userId1')
+              select(name='team1UserId1')
                 option Choose...
                 for user in users
                   option(value='#{user._id}') #{user.name}
               if gameType === 'doubles'
-                select(name='team1userId2')
+                select(name='team1UserId2')
                   option Choose...
                   for user in users
                     option(value='#{user._id}') #{user.name}
           .teamName2(data-role='fieldcontain')
             fieldset.teamlabel(data-role='controlgroup')
               legend Blue Team:
-              select(name='team2userId1')
+              select(name='team2UserId1')
                 option Choose...
                 for user in users
                   option(value='#{user._id}') #{user.name}
               if gameType === 'doubles'
-                select(name='team2userId2')
+                select(name='team2UserId2')
                   option Choose...
                   for user in users
                     option(value='#{user._id}') #{user.name}

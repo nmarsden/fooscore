@@ -99,6 +99,34 @@ module.exports = function(app){
         }
     }
 
+    function verifyCreateGameParams(gameType, team1UserId1, team1UserId2, team2UserId1, team2UserId2) {
+        if (gameType === "singles") {
+            if ((team1UserId1 === 'Choose...') || (team2UserId1 === 'Choose...')) {
+                return "userId must be selected";
+            }
+            if (!team1UserId1 || !team2UserId1) {
+                return "userId cannot be null";
+            }
+            if (team1UserId1 === team2UserId1) {
+                return "userIds must be unique";
+            }
+        } else if (gameType === "doubles") {
+            var userIds = [team1UserId1, team1UserId2, team2UserId1, team2UserId2];
+            if (_.find(userIds, function(userId) { return userId === 'Choose...'; })) {
+                return "userId must be selected";
+            }
+            if (_.compact(userIds).length != 4) {
+                return "userId cannot be null";
+            }
+            if (_.uniq(userIds).length != 4) {
+                return "userIds must be unique";
+            }
+        } else {
+            return "gameType '" + gameType + "' unknown";
+        }
+        return null;
+    }
+
     app.get('/games/new', function(req, res){
         models.User.find(function (err, users) {
             if (err) {
@@ -114,20 +142,24 @@ module.exports = function(app){
 
     app.post('/games/new', function(req, res){
         var gameType = req.param('gameType');
-        var team1userId1 = req.param('team1userId1');
-        var team1userId2 = req.param('team1userId2');
-        var team2userId1 = req.param('team2userId1');
-        var team2userId2 = req.param('team2userId2');
-        // TODO verify that userIds are all different
-        // TODO verify that for gameType 'doubles' we have 4 userIds
+        var team1UserId1 = req.param('team1UserId1');
+        var team1UserId2 = req.param('team1UserId2');
+        var team2UserId1 = req.param('team2UserId1');
+        var team2UserId2 = req.param('team2UserId2');
+        var verifyResult = verifyCreateGameParams(gameType, team1UserId1, team1UserId2, team2UserId1, team2UserId2);
+        if (verifyResult != null) {
+            console.log("GAME CREATION VERIFICATION FAILED", verifyResult);
+            res.send("GAME CREATION VERIFICATION FAILED: " + verifyResult, 400);
+            return true;
+        }
 
-        createFindExistingTeamsQueryFor(gameType, team1userId1, team1userId2, team2userId1, team2userId2)
-          .run(function (team1userId1, team1userId2, team2userId1, team2userId2, err, existingTeams) {
+        createFindExistingTeamsQueryFor(gameType, team1UserId1, team1UserId2, team2UserId1, team2UserId2)
+          .run(function (team1UserId1, team1UserId2, team2UserId1, team2UserId2, err, existingTeams) {
             if (err) {
                 return console.log("ERROR RETRIEVING TEAMS", err);
             }
-            var team1 = retrieveOrCreateTeamFor(team1userId1, team1userId2, existingTeams);
-            var team2 = retrieveOrCreateTeamFor(team2userId1, team2userId2, existingTeams);
+            var team1 = retrieveOrCreateTeamFor(team1UserId1, team1UserId2, existingTeams);
+            var team2 = retrieveOrCreateTeamFor(team2UserId1, team2UserId2, existingTeams);
 
             var game = new models.Game({
                 gameType: gameType,
@@ -142,7 +174,7 @@ module.exports = function(app){
                 console.log("game created");
                 viewGame(res, game._id);
             });
-        }.bind(null, team1userId1, team1userId2, team2userId1, team2userId2));
+        }.bind(null, team1UserId1, team1UserId2, team2UserId1, team2UserId2));
     });
 
     app.post('/games/:id/goal/new', function(req, res){
