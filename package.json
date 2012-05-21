@@ -1,6 +1,6 @@
 {
     "name": "fooscore",
-	"node": "0.6.12",
+	"node": "0.6.17",
 	"author": "nmarsden", 
 	"version": "0.0.1", 
 	"private": true, 

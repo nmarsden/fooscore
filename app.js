@@ -1,7 +1,8 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var config = require('./config.js');
 
-mongoose.connect('mongodb://localhost/fooscore');
+mongoose.connect(config.mongodb.url);
 
 var app = module.exports = express.createServer();
 
