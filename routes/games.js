@@ -128,7 +128,7 @@ module.exports = function(app){
     }
 
     app.get('/games/new', function(req, res){
-        models.User.find(function (err, users) {
+        models.User.find({}).sort('name', 1).run( function (err, users) {
             if (err) {
                 console.log("ERROR RETRIEVING USERS", err);
             }
