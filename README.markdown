@@ -18,8 +18,8 @@ TODO
   * sign in using account
   * sign in using facebook
   * sign in using twitter
-* <strike>enter game scores (singles or doubles)</strike>
-* <strike>show leaderboards (singles or doubles)</strike>
+* ~~enter game scores (singles or doubles)~~
+* ~~show leaderboards (singles or doubles)~~
 * indicate winner when game ends
 * sound of crowd cheering when a goal is scored
 * button to swap teams from left to right (and vice-versa)
