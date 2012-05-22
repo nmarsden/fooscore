@@ -8,7 +8,7 @@ Technology
 * node modules
     * [express](http://expressjs.com/) - routing requests
     * [jade](http://jade-lang.com/) - templating HTML
-    * [mongoose - node MongoDB object modeling tool - http://mongoosejs.com/  
+    * [mongoose](http://mongoosejs.com/) - node MongoDB object modeling tool
 * [jQuery Mobile](http://jquerymobile.com/)
 
 TODO
