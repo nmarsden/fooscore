@@ -8,32 +8,43 @@ html
           ul
             li
               a(href='/') Home
-      div(data-role='content')
+      div(id='newGameContent', data-role='content')
         h1 #{gameTitle}
         form(action='/games/new', method='post')
           input(type='hidden', name='gameType', value='#{gameType}')
           .teamName1(data-role='fieldcontain')
             fieldset.teamlabel(data-role='controlgroup')
               legend Red Team:
-              select(name='team1UserId1')
-                option Choose...
+              select(id='team1UserId1', name='team1UserId1')
+                option(value='') Choose...
                 for user in users
                   option(value='#{user._id}') #{user.name}
               if gameType === 'doubles'
-                select(name='team1UserId2')
-                  option Choose...
+                select(id='team1UserId2', name='team1UserId2')
+                  option(value='') Choose...
                   for user in users
                     option(value='#{user._id}') #{user.name}
           .teamName2(data-role='fieldcontain')
             fieldset.teamlabel(data-role='controlgroup')
               legend Blue Team:
-              select(name='team2UserId1')
-                option Choose...
+              select(id='team2UserId1', name='team2UserId1')
+                option(value='') Choose...
                 for user in users
                   option(value='#{user._id}') #{user.name}
               if gameType === 'doubles'
-                select(name='team2UserId2')
-                  option Choose...
+                select(id='team2UserId2', name='team2UserId2')
+                  option(value='') Choose...
                   for user in users
                     option(value='#{user._id}') #{user.name}
           input(type='submit', value='Start')
+      script(src='/javascripts/gameNew.js', type='text/javascript')
+
+      // TODO This is ugly! Having the server return JSON and using client side templating build be better!
+      != "<script type='text/javascript'>"
+      != "var userData = [];"
+      for user in users
+        != "userData.push({_id:'" + user._id + "', name:'" + user.name + "'});"
+      != "var newGameContentDiv = $('#newGameContent')[0];"
+      != "$.data(newGameContentDiv, 'users', userData);"
+      != "</script>"
+

@@ -1,5 +1,5 @@
 var models = require('../models/models'),
-    _ = require("../underscore-min");
+    _ = require("../public/javascripts/thirdparty/underscore-min");
 
 module.exports = function(app){
 
@@ -101,7 +101,7 @@ module.exports = function(app){
 
     function verifyCreateGameParams(gameType, team1UserId1, team1UserId2, team2UserId1, team2UserId2) {
         if (gameType === "singles") {
-            if ((team1UserId1 === 'Choose...') || (team2UserId1 === 'Choose...')) {
+            if ((team1UserId1 === '') || (team2UserId1 === '')) {
                 return "userId must be selected";
             }
             if (!team1UserId1 || !team2UserId1) {
@@ -112,7 +112,7 @@ module.exports = function(app){
             }
         } else if (gameType === "doubles") {
             var userIds = [team1UserId1, team1UserId2, team2UserId1, team2UserId2];
-            if (_.find(userIds, function(userId) { return userId === 'Choose...'; })) {
+            if (_.find(userIds, function(userId) { return userId === ''; })) {
                 return "userId must be selected";
             }
             if (_.compact(userIds).length != 4) {

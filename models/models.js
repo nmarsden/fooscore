@@ -1,5 +1,5 @@
 var mongoose = require('mongoose'),
-    _ = require("../underscore-min");
+    _ = require("../public/javascripts/thirdparty/underscore-min");
 
 // Schemas
 var Schema = mongoose.Schema;

@@ -39,8 +39,8 @@ pageScript(function($context){
             console.log("showGameAsInProgress called");
             $('#teamGoal1Btn').closest('.ui-btn').show();
             $('#teamGoal2Btn').closest('.ui-btn').show();
-            $context.find('#teamGoal1Btn').bind('click', goalBtnEventHandler(1));
-            $context.find('#teamGoal2Btn').bind('click', goalBtnEventHandler(2));
+            $context.find('#teamGoal1Btn').bind('click', _.debounce(goalBtnEventHandler(1), 300));
+            $context.find('#teamGoal2Btn').bind('click', _.debounce(goalBtnEventHandler(2), 300));
         };
 
         var gameState = $context.find('#gameState').val();
