@@ -1,6 +1,12 @@
 pageScript(function($context){
     $context.live("pageinit", function(event, ui) {
 
+        var $startButton = $("#startButton");
+
+        // disable Start button until all users are selected
+        $startButton.prop("disabled", true);
+
+        // populate select meta-data
         var userSelectedDatas = _.map($context.find('select'), function(userSelect) {
             var $userSelect = $(userSelect);
             return {
@@ -9,10 +15,15 @@ pageScript(function($context){
                 selectedValue: $userSelect.find("option:selected").val()
             }
         });
+
+        // ios5 flag
         var ios5 = navigator.userAgent.match(/OS 5_[0-9_]+ like Mac OS X/i) != null;
 
+        // retrieve users array from data attached to the dom
         var userDatas = $.data($('#newGameContent')[0], 'users');
 
+        // function: disableOtherUserSelects
+        // Event handler to disable user selects, except for target select
         var disableOtherUserSelects = function(event, ui) {
             _.each(userSelectedDatas, function(userSelectedData) {
                 if (event.target.id !== userSelectedData.id) {
@@ -21,6 +32,8 @@ pageScript(function($context){
             });
         };
 
+        // function: enableOtherUserSelects
+        // Event handler to enable user selects, except for target select
         var enableOtherUserSelects = function(event, ui) {
             _.each(userSelectedDatas, function(userSelectedData) {
                 if (event.target.id !== userSelectedData.id) {
@@ -29,6 +42,9 @@ pageScript(function($context){
             });
         };
 
+        // function: userChangeEventHandler
+        // Event handler to update user selects options to ensure duplicate users cannot be selected
+        // Also, enables the startButton when all user selects have a selected user
         var userChangeEventHandler = function(event, ui) {
             // Update userSelectedDatas
             var targetSelectedValue = $(event.target).find("option:selected").val();
@@ -67,8 +83,12 @@ pageScript(function($context){
                 }
             })
 
-            // TODO disable Start button until all users are selected
-
+            // Enable start button when all selects have a selected user
+            var haveUnselectedUsers = _.any(userSelectedDatas, function(userSelectedData) {
+                console.log("userSelectedData.selectedValue", userSelectedData.selectedValue);
+                return (userSelectedData.selectedValue === '');
+            });
+            $startButton.prop("disabled", haveUnselectedUsers);
         };
 
         _.each(userSelectedDatas, function(userSelectedData) {
