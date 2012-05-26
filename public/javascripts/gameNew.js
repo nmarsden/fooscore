@@ -3,9 +3,6 @@ pageScript(function($context){
 
         var $startButton = $("#startButton");
 
-        // disable Start button until all users are selected
-        $startButton.prop("disabled", true);
-
         // populate select meta-data
         var userSelectedDatas = _.map($context.find('select'), function(userSelect) {
             var $userSelect = $(userSelect);
@@ -89,6 +86,7 @@ pageScript(function($context){
                 return (userSelectedData.selectedValue === '');
             });
             $startButton.prop("disabled", haveUnselectedUsers);
+            $startButton.button('refresh');
         };
 
         _.each(userSelectedDatas, function(userSelectedData) {

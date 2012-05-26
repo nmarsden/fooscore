@@ -36,7 +36,7 @@ html
                   option(value='') Choose...
                   for user in users
                     option(value='#{user._id}') #{user.name}
-          input(id='startButton', type='submit', value='Start')
+          input(id='startButton', type='submit', value='Start', disabled)
       script(src='/javascripts/gameNew.js', type='text/javascript')
 
       // TODO This is ugly! Having the server return JSON and using client side templating build be better!
