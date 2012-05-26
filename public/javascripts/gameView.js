@@ -27,7 +27,6 @@ pageScript(function($context){
         };
         var goalBtnEventHandler = function(teamNumber) {
             return function() {
-                // TODO ignore subsequent button clicks while processing this event
                 var newScore = increaseTeamScore('teamScore' + teamNumber);
                 postNewGoal('teamId' + teamNumber);
                 if (newScore === 10) {
@@ -39,8 +38,8 @@ pageScript(function($context){
             console.log("showGameAsInProgress called");
             $('#teamGoal1Btn').closest('.ui-btn').show();
             $('#teamGoal2Btn').closest('.ui-btn').show();
-            $context.find('#teamGoal1Btn').bind('click', _.debounce(goalBtnEventHandler(1), 300));
-            $context.find('#teamGoal2Btn').bind('click', _.debounce(goalBtnEventHandler(2), 300));
+            $context.find('#teamGoal1Btn').bind('vmousedown', _.debounce(goalBtnEventHandler(1), 100, true));
+            $context.find('#teamGoal2Btn').bind('vmousedown', _.debounce(goalBtnEventHandler(2), 100, true));
         };
 
         var gameState = $context.find('#gameState').val();
